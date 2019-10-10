@@ -29,7 +29,8 @@ public:
 
     void render(GLsizei aInstanceCount) const;
 
-private:
+/// \todo privatize?
+//private:
     VertexArrayObject mVertexArray;
     Program mProgram;
 };

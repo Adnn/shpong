@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "game.h"
+#include "paragame.h"
 
 constexpr int gWindowWidth{1280};
 constexpr int gWindowHeight{1024};
@@ -98,10 +98,22 @@ int main(void)
 
     std::unique_ptr<ad::Scene> scene = ad::setupScene(engine);
     ad::Timer timer{glfwGetTime(), 0.};
+    ad::MouseInput mouse;
 
     while(!glfwWindowShouldClose(window))
     {
-        ad::updateScene(*scene, engine, timer);
+        {
+            double x, y;
+            glfwGetCursorPos(window, &x, &y);
+            bool isClicked = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS;
+
+            // Origin is top-left in glfw, and bottom-left in OpenGL: convert to OpenGL
+            mouse.mPosition = {x, engine.getWindowSize().height() - y};
+            mouse.mClickEdge = (!mouse.mClick) && isClicked;
+            mouse.mClick = isClicked;
+        }
+
+        ad::updateScene(*scene, engine, timer, mouse);
         ad::renderScene(*scene, engine);
 
         glfwSwapBuffers(window);

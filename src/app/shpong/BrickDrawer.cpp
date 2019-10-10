@@ -41,4 +41,11 @@ BrickDrawer::BrickDrawer() :
         mInstanceBuffer(addInstanceBuffer(gInstanceDescription, sizeof(Instance)))
 {}
 
+
+void BrickDrawer::setBufferResolution(Size2<int> aNewResolution)
+{
+    GLint location = glGetUniformLocation(mProgram, "in_BufferResolution");
+    glProgramUniform2iv(mProgram, location, 1, aNewResolution.data());
+}
+
 } // namespace ad

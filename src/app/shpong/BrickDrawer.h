@@ -8,13 +8,25 @@
 
 namespace ad {
 
-struct Instance
+struct BrickDrawer : public GenericDrawer
 {
-    Rectangle<GLfloat> mRect;
-    Vec3<GLubyte> mColor;
+    struct Instance
+    {
+        Rectangle<GLfloat> mRect;
+        Vec3<GLubyte> mColor;
+    };
+    static const std::initializer_list<AttributeDescription> gInstanceDescription;
+
+    BrickDrawer();
+
+    void setBufferResolution(Size2<int> aNewResolution);
+
+    VertexBufferObject mVertexBuffer;
+    VertexBufferObject mInstanceBuffer;
 };
 
-static const std::initializer_list<AttributeDescription> gInstanceDescription{
+
+inline const std::initializer_list<AttributeDescription> BrickDrawer::gInstanceDescription = {
     {
         2,
         4, offsetof(Instance, mRect), MappedGL<GLfloat>::enumerator
@@ -23,14 +35,6 @@ static const std::initializer_list<AttributeDescription> gInstanceDescription{
         {3, Attribute::Access::Float, true},
         3, offsetof(Instance, mColor), MappedGL<GLubyte>::enumerator
     },
-};
-
-struct BrickDrawer : public GenericDrawer
-{
-    BrickDrawer();
-
-    VertexBufferObject mVertexBuffer;
-    VertexBufferObject mInstanceBuffer;
 };
 
 

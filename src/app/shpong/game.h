@@ -12,7 +12,7 @@
 namespace ad
 {
 
-struct Player : public Instance
+struct Player : public BrickDrawer::Instance
 {};
 
 

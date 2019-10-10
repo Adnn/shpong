@@ -10,7 +10,7 @@ static const GLchar* gVertexShader = R"#(
     layout(location=2) in vec4 in_InstanceRect;
     layout(location=3) in vec3 in_InstanceColor;
 
-    uniform ivec2 in_BufferResolution = ivec2(800, 600);
+    uniform ivec2 in_BufferResolution;
 
     out vec3 ex_Color;
 
