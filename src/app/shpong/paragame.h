@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BrickDrawer.h"
+#include "Input.h"
 
 #include <engine/commons.h>
 #include <engine/Engine.h>
@@ -13,13 +14,6 @@
 
 namespace ad
 {
-
-struct MouseInput
-{
-    Position2<GLfloat> mPosition{0., 0.};
-    bool mClick{false};
-    bool mClickEdge{false};
-};
 
 struct Piece
 {

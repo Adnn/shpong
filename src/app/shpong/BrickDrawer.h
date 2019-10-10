@@ -21,8 +21,12 @@ struct BrickDrawer : public GenericDrawer
 
     void setBufferResolution(Size2<int> aNewResolution);
 
+    void render(GLsizei aInstanceCount) const;
+
     VertexBufferObject mVertexBuffer;
     VertexBufferObject mInstanceBuffer;
+
+    std::vector<Instance> mBricks;
 };
 
 

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "paragame.h"
+#include "game.h"
 
 constexpr int gWindowWidth{1280};
 constexpr int gWindowHeight{1024};
@@ -110,6 +110,7 @@ int main(void)
             // Origin is top-left in glfw, and bottom-left in OpenGL: convert to OpenGL
             mouse.mPosition = {x, engine.getWindowSize().height() - y};
             mouse.mClickEdge = (!mouse.mClick) && isClicked;
+            mouse.mReleaseEdge = mouse.mClick && !isClicked;
             mouse.mClick = isClicked;
         }
 
