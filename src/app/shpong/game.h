@@ -37,7 +37,7 @@ struct Player
     }
 
     BrickDrawer::Instance mBrick;
-    Position2<GLfloat> mHeldPos{-1., 0.};
+    Position2<GLfloat> mHeldPos{-1.f, 0.f};
 };
 
 typedef BrickDrawer::Instance Brick;
@@ -47,7 +47,7 @@ struct Ball
     void update(const Rectangle<GLfloat> &aRacket, GLfloat aDuration);
 
     BrickDrawer::Instance mBrick;
-    Vec2<GLfloat> mSpeed{10., -100.};
+    Vec2<GLfloat> mSpeed{10.f, -100.f};
 };
 
 
@@ -56,10 +56,10 @@ struct Game
     std::vector<Brick> generateBricks();
 
     Player mP1{ Rectangle<GLfloat>{{50.f, 50.f}, {50.f, 10.f}},
-                {0, 255, 120}};
+                rgb(0, 255, 120)};
     std::vector<Brick> mBricks = generateBricks();
     Ball mBall{ Rectangle<GLfloat>{{300.f, 300.f}, {10.f, 10.f}},
-                {80, 90, 100}};
+                rgb(80, 90, 100)};
 };
 
 
@@ -93,7 +93,8 @@ inline void updateScene(Scene & aScene, Engine & aEngine,
                         const Timer & aTimer, const MouseInput &aMouse)
 {
     aScene.mGame.mP1.input(aMouse);
-    aScene.mGame.mBall.update(aScene.mGame.mP1.mBrick.mRect, aTimer.mDelta);
+    aScene.mGame.mBall.update(aScene.mGame.mP1.mBrick.mRect,
+                              static_cast<GLfloat>(aTimer.mDelta));
 
     aScene.mDrawer.mBricks.clear();
     aScene.mDrawer.mBricks.push_back(aScene.mGame.mP1.mBrick);

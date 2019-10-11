@@ -108,7 +108,8 @@ int main(void)
             bool isClicked = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT)==GLFW_PRESS;
 
             // Origin is top-left in glfw, and bottom-left in OpenGL: convert to OpenGL
-            mouse.mPosition = {x, engine.getWindowSize().height() - y};
+            mouse.mPosition = {static_cast<GLfloat>(x),
+                               static_cast<GLfloat>(engine.getWindowSize().height() - y)};
             mouse.mClickEdge = (!mouse.mClick) && isClicked;
             mouse.mReleaseEdge = mouse.mClick && !isClicked;
             mouse.mClick = isClicked;
