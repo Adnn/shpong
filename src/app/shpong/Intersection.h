@@ -60,5 +60,39 @@ intersect(const Segment<T> & p, const Segment<T> & q)
     return {};
 }
 
+template <class T_left, class T_iterator>
+std::optional<std::pair<Intersection, Intersection>>
+findFirstIntersection(const T_left & aLeft,
+                      T_iterator aRightFirst, const T_iterator &aRightLast)
+{
+    std::optional<std::pair<Intersection, Intersection>> result;
+    for (; aRightFirst != aRightLast; ++aRightFirst)
+    {
+        if (auto optIntersection = intersect(aLeft, *aRightFirst))
+        {
+            if (!result || (optIntersection->first.t < result->first.t))
+            {
+                result = optIntersection;
+            }
+        }
+    }
+
+    return result;
+}
+
+template <class T>
+std::optional<std::pair<Intersection, Intersection>>
+intersect(const Segment<T> & aSegment, const Rectangle<T> & aRect)
+{
+    auto edges = {
+        segment(aRect.bottomLeft(), aRect.topLeft()),
+        segment(aRect.topLeft(),    aRect.topRight()),
+        segment(aRect.topRight(),   aRect.bottomRight()),
+        segment(aRect.bottomRight(), aRect.bottomLeft()),
+    };
+
+    return findFirstIntersection(aSegment, edges.begin(), edges.end());
+}
+
 
 } // namespace ad

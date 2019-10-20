@@ -8,6 +8,7 @@
 
 namespace ad {
 
+
 struct BrickDrawer : public GenericDrawer
 {
     struct Instance

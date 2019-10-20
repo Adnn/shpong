@@ -44,9 +44,13 @@ typedef BrickDrawer::Instance Brick;
 
 struct Ball
 {
-    void update(const Rectangle<GLfloat> &aRacket, GLfloat aDuration);
+    void update(const std::vector<Rectangle<GLfloat>> aColliders,
+                GLfloat aDuration);
 
-    BrickDrawer::Instance mBrick;
+    BrickDrawer::Instance makeDrawInstance();
+
+    Rectangle<GLfloat> mRect;
+    Vec3<GLubyte> mColor;
     Vec2<GLfloat> mSpeed{10.f, -100.f};
 };
 
@@ -54,6 +58,7 @@ struct Ball
 struct Game
 {
     std::vector<Brick> generateBricks();
+    void update(const Timer & aTimer, const MouseInput & aMouse);
 
     Player mP1{ Rectangle<GLfloat>{{50.f, 50.f}, {50.f, 10.f}},
                 rgb(0, 255, 120)};
@@ -75,7 +80,7 @@ struct Scene {
 
     void render() const
     {
-        mDrawer.render(2+mGame.mBricks.size());
+        mDrawer.render(static_cast<GLsizei>(2+mGame.mBricks.size()));
     }
 
     Game mGame;
@@ -92,13 +97,11 @@ inline std::unique_ptr<Scene> setupScene(Engine & aEngine)
 inline void updateScene(Scene & aScene, Engine & aEngine,
                         const Timer & aTimer, const MouseInput &aMouse)
 {
-    aScene.mGame.mP1.input(aMouse);
-    aScene.mGame.mBall.update(aScene.mGame.mP1.mBrick.mRect,
-                              static_cast<GLfloat>(aTimer.mDelta));
+    aScene.mGame.update(aTimer, aMouse);
 
     aScene.mDrawer.mBricks.clear();
     aScene.mDrawer.mBricks.push_back(aScene.mGame.mP1.mBrick);
-    aScene.mDrawer.mBricks.push_back(aScene.mGame.mBall.mBrick);
+    aScene.mDrawer.mBricks.push_back(aScene.mGame.mBall.makeDrawInstance());
     aScene.mDrawer.mBricks.insert(aScene.mDrawer.mBricks.end(),
                                   aScene.mGame.mBricks.begin(),
                                   aScene.mGame.mBricks.end());
