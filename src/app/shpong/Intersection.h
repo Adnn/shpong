@@ -7,17 +7,17 @@
 namespace ad {
 
 
-struct Intersection
-{
-    double t;
-};
-
 template <class T>
 struct Segment
 {
     Vec2<T> displacement() const
     {
         return b-a;
+    }
+
+    Vec2<T> normal() const
+    {
+        return {-displacement().y(), displacement.x()};
     }
 
     Position2<T> a;
@@ -30,6 +30,13 @@ Segment<T> segment(Position2<T> a, Position2<T> b)
     return Segment<T>{a, b};
 }
 
+template <class T>
+struct Intersection
+{
+    double  t;
+    Segment<T> mSegment;
+};
+
 template <class T_derived, class T_value>
 T_value cross2d(const math::Vector<T_derived, 2, T_value> & aLhs,
                 const math::Vector<T_derived, 2, T_value> & aRhs)
@@ -38,7 +45,7 @@ T_value cross2d(const math::Vector<T_derived, 2, T_value> & aLhs,
 }
 
 template <class T>
-std::optional<std::pair<Intersection, Intersection>>
+std::optional<std::pair<Intersection<T>, Intersection<T>>>
 intersect(const Segment<T> & p, const Segment<T> & q)
 {
     auto r = p.displacement();
@@ -53,7 +60,7 @@ intersect(const Segment<T> & p, const Segment<T> & q)
         if (   t0 >=0 && t0 <=1
             && t1 >=0 && t1 <=1)
         {
-            return std::make_pair<Intersection, Intersection>({t0}, {t1});
+            return std::make_pair<Intersection<T>, Intersection<T>>({t0, p}, {t1, q});
         }
     }
 
@@ -61,11 +68,10 @@ intersect(const Segment<T> & p, const Segment<T> & q)
 }
 
 template <class T_left, class T_iterator>
-std::optional<std::pair<Intersection, Intersection>>
-findFirstIntersection(const T_left & aLeft,
-                      T_iterator aRightFirst, const T_iterator &aRightLast)
+auto findFirstIntersection(const T_left & aLeft,
+                           T_iterator aRightFirst, const T_iterator &aRightLast)
 {
-    std::optional<std::pair<Intersection, Intersection>> result;
+    decltype(intersect(aLeft, *aRightFirst)) result;
     for (; aRightFirst != aRightLast; ++aRightFirst)
     {
         if (auto optIntersection = intersect(aLeft, *aRightFirst))
@@ -81,7 +87,7 @@ findFirstIntersection(const T_left & aLeft,
 }
 
 template <class T>
-std::optional<std::pair<Intersection, Intersection>>
+std::optional<std::pair<Intersection<T>, Intersection<T>>>
 intersect(const Segment<T> & aSegment, const Rectangle<T> & aRect)
 {
     auto edges = {
