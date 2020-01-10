@@ -8,6 +8,7 @@ set(${PROJECT_NAME}_HEADERS
     BrickDrawer.h
     GenericDrawer.h
     Intersection.h
+    Rotation.h
 )
 
 set(${PROJECT_NAME}_SOURCES

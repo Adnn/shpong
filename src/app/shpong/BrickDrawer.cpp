@@ -11,19 +11,19 @@ namespace {
 
     constexpr size_t gVerticesCount{4};
     Vertex gVerticesQuad[gVerticesCount] = {
-        {
+        Vertex{
             {0.0f, 0.0f},
             {0, 0},
         },
-        {
+        Vertex{
             {0.0f,  1.0f},
             {0, 1},
         },
-        {
+        Vertex{
             { 1.0f, 0.0f},
             {1, 0},
         },
-        {
+        Vertex{
             { 1.0f,  1.0f},
             {1, 1},
         },

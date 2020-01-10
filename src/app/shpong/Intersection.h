@@ -17,7 +17,7 @@ struct Segment
 
     Vec2<T> normal() const
     {
-        return {-displacement().y(), displacement.x()};
+        return Vec2<T>{-displacement().y(), displacement().x()}.normalize();
     }
 
     Position2<T> a;
@@ -67,18 +67,23 @@ intersect(const Segment<T> & p, const Segment<T> & q)
     return {};
 }
 
-template <class T_left, class T_iterator>
-auto findFirstIntersection(const T_left & aLeft,
-                           T_iterator aRightFirst, const T_iterator &aRightLast)
+template <class T, class T_iterator>
+std::optional<std::pair<
+    std::pair<Intersection<T>, Intersection<T>>,
+    T_iterator
+>>
+findFirstIntersection(const Segment<T> & aLeft,
+                      T_iterator aRightFirst,
+                      const T_iterator &aRightLast)
 {
-    decltype(intersect(aLeft, *aRightFirst)) result;
+    decltype(findFirstIntersection(aLeft, aRightFirst, aRightLast)) result;
     for (; aRightFirst != aRightLast; ++aRightFirst)
     {
         if (auto optIntersection = intersect(aLeft, *aRightFirst))
         {
-            if (!result || (optIntersection->first.t < result->first.t))
+            if (!result || (optIntersection->first.t < result->first.first.t))
             {
-                result = optIntersection;
+                result = {*optIntersection, aRightFirst};
             }
         }
     }
@@ -97,7 +102,8 @@ intersect(const Segment<T> & aSegment, const Rectangle<T> & aRect)
         segment(aRect.bottomRight(), aRect.bottomLeft()),
     };
 
-    return findFirstIntersection(aSegment, edges.begin(), edges.end());
+    auto optIntersection = findFirstIntersection(aSegment, edges.begin(), edges.end());
+    return optIntersection ? std::make_optional(optIntersection->first) : std::nullopt;
 }
 
 

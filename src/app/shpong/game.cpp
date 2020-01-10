@@ -1,6 +1,7 @@
 #include "game.h"
 
 #include "Intersection.h"
+#include "Rotation.h"
 
 #include <handy/random.h>
 
@@ -18,10 +19,21 @@ void Ball::update(const std::vector<Rectangle<GLfloat>> aColliders, GLfloat aDur
 
     if (optIntersection)
     {
-        float t = static_cast<float>(optIntersection->first.t);
+        float t = static_cast<float>(optIntersection->first.first.t);
         // Minus epsilon, otherwise we are stuck colliding at zero in the recursions
         pos += mSpeed * aDuration * (t-0.001f);
-        mSpeed *= -1;
+
+
+        Vec2<GLfloat> n = optIntersection->first.second.mSegment.normal();
+        if (optIntersection->second == begin(aColliders)) // The player
+        {
+            GLfloat rotationFactor = 2 * (optIntersection->first.second.t - 0.5); // [-1., 1.]
+            // Counterclockwise rotation angle
+            n = n*makeRotation(rotationFactor * -0.4);
+        }
+        // Reflection
+        // r = d - 2(d . n)n
+        mSpeed = mSpeed - 2 * mSpeed.dot(n) * n;
 
         // Recursive call, with the remaining travel time
         update(aColliders, aDuration*(1-t));
