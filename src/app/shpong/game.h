@@ -65,10 +65,10 @@ struct Game
     std::vector<Brick> generateBricks();
     void update(const Timer & aTimer, const MouseInput & aMouse);
 
-    Player mP1{ Rectangle<GLfloat>{{275.f, 50.f}, {50.f, 10.f}},
+    Player mP1{ Rectangle<GLfloat>{{200.f, 50.f}, {50.f, 10.f}},
                 rgb(0, 255, 120)};
     std::vector<Brick> mBricks = generateBricks();
-    Ball mBall{ Rectangle<GLfloat>{{300.f, 300.f}, {10.f, 10.f}},
+    Ball mBall{ Rectangle<GLfloat>{{225.f, 300.f}, {10.f, 10.f}},
                 rgb(80, 90, 100)};
 };
 

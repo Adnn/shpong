@@ -90,6 +90,12 @@ std::vector<Brick> Game::generateBricks()
             Rectangle<GLfloat>{{i*50.f, 350.f}, {50.f, 10.f}},
             rgb(randomChannel(), randomChannel(), randomChannel())
         });
+
+        if(i%2)
+        result.push_back({
+            Rectangle<GLfloat>{{i*50.f, 200.f}, {50.f, 10.f}},
+            rgb(randomChannel(), randomChannel(), randomChannel())
+        });
     }
     return result;
 }
