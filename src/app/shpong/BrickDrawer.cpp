@@ -48,10 +48,10 @@ void BrickDrawer::setBufferResolution(Size2<int> aNewResolution)
     glProgramUniform2iv(mProgram, location, 1, aNewResolution.data());
 }
 
-void BrickDrawer::render(GLsizei aInstanceCount) const
+void BrickDrawer::render() const
 {
     respecifyBuffer(mInstanceBuffer, range(mBricks));
-    GenericDrawer::render(aInstanceCount);
+    GenericDrawer::render(mBricks.size());
 }
 
 } // namespace ad

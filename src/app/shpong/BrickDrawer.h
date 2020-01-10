@@ -22,7 +22,7 @@ struct BrickDrawer : public GenericDrawer
 
     void setBufferResolution(Size2<int> aNewResolution);
 
-    void render(GLsizei aInstanceCount) const;
+    void render() const;
 
     VertexBufferObject mVertexBuffer;
     VertexBufferObject mInstanceBuffer;

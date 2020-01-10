@@ -1,6 +1,5 @@
 #include "game.h"
 
-#include "Intersection.h"
 #include "Rotation.h"
 
 #include <handy/random.h>
@@ -10,20 +9,26 @@
 
 namespace ad {
 
-void Ball::update(const std::vector<Rectangle<GLfloat>> aColliders, GLfloat aDuration)
+void Ball::handleReflection(Vec2<GLfloat> n, const GLfloat t, const GLfloat aDuration)
+{
+    // Minus epsilon, otherwise we are stuck colliding at zero in the recursions
+    mRect.mPosition += mSpeed * aDuration * (t-0.001f);
+
+    // Reflection
+    // r = d - 2(d . n)n
+    mSpeed = mSpeed - 2 * mSpeed.dot(n) * n;
+}
+
+void Ball::update(const std::vector<Rectangle<GLfloat>> & aColliders,
+                  const std::vector<Segment<GLfloat>> & aBorders,
+                  const GLfloat aDuration)
 {
     Position2<GLfloat> & pos = mRect.mPosition;
+    Segment<GLfloat> segment{pos, pos+mSpeed*aDuration};
 
-    auto optIntersection = findFirstIntersection(segment(pos, pos+mSpeed*aDuration),
-                                                 begin(aColliders), end(aColliders));
-
-    if (optIntersection)
+    // Note: Impossible to collide with a border first
+    if (auto optIntersection = findFirstIntersection(segment, begin(aColliders), end(aColliders)))
     {
-        float t = static_cast<float>(optIntersection->first.first.t);
-        // Minus epsilon, otherwise we are stuck colliding at zero in the recursions
-        pos += mSpeed * aDuration * (t-0.001f);
-
-
         Vec2<GLfloat> n = optIntersection->first.second.mSegment.normal();
         if (optIntersection->second == begin(aColliders)) // The player
         {
@@ -31,16 +36,41 @@ void Ball::update(const std::vector<Rectangle<GLfloat>> aColliders, GLfloat aDur
             // Counterclockwise rotation angle
             n = n*makeRotation(rotationFactor * -0.4);
         }
-        // Reflection
-        // r = d - 2(d . n)n
-        mSpeed = mSpeed - 2 * mSpeed.dot(n) * n;
+        auto t = static_cast<float>(optIntersection->first.first.t);
+        handleReflection(n, t, aDuration);
 
-        // Recursive call, with the remaining travel time
-        update(aColliders, aDuration*(1-t));
+        // Preventing a reflection on the racket that would "enter" the racket
+        // (because of the varying normal)
+        if (optIntersection->second == begin(aColliders)) // The player
+        {
+            if (mSpeed.y() < 35.f)
+            {
+                mSpeed = {
+                    (mSpeed.x() < 0. ? -230.f : 230.f),
+                    35.f
+                };
+            }
+        }
+
+        // Recursion
+        return update(aColliders, aBorders, aDuration*(1-t));
+    }
+    else if (auto borderIntersection = findFirstIntersection(segment, begin(aBorders), end(aBorders)))
+    {
+        auto t = static_cast<float>(borderIntersection->first.first.t);
+        return handleReflection(borderIntersection->first.second.mSegment.normal(),
+                                t,
+                                aDuration);
+        // Recursion
+        return update(aColliders, aBorders, aDuration*(1-t));
     }
     else
     {
         pos += mSpeed * aDuration;
+        if (pos.y() < 0.f)
+        {
+            pos.y() = 300.f;
+        }
     }
 }
 
@@ -73,7 +103,13 @@ void Game::update(const Timer & aTimer, const MouseInput & aMouse)
     {
         colliders.push_back(brick.mRect);
     }
-    mBall.update(colliders, static_cast<GLfloat>(aTimer.mDelta));
+
+    std::vector<Segment<GLfloat>> borders {
+        {{0.f, 0.f}, {0.f, 1000.f}},
+        {{500.f, 1000.f}, {500.f, 0.f}},
+    };
+
+    mBall.update(colliders, borders, static_cast<GLfloat>(aTimer.mDelta));
 }
 
 } // namespace ad

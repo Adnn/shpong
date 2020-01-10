@@ -2,6 +2,7 @@
 
 #include "BrickDrawer.h"
 #include "Input.h"
+#include "Intersection.h"
 
 #include <engine/commons.h>
 #include <engine/Engine.h>
@@ -44,14 +45,18 @@ typedef BrickDrawer::Instance Brick;
 
 struct Ball
 {
-    void update(const std::vector<Rectangle<GLfloat>> aColliders,
-                GLfloat aDuration);
+    void update(const std::vector<Rectangle<GLfloat>> & aColliders,
+                const std::vector<Segment<GLfloat>> & aBorders,
+                const GLfloat aDuration);
 
     BrickDrawer::Instance makeDrawInstance();
 
     Rectangle<GLfloat> mRect;
     Vec3<GLubyte> mColor;
-    Vec2<GLfloat> mSpeed{10.f, -100.f};
+    Vec2<GLfloat> mSpeed{0.f, -250.f};
+
+private:
+    void handleReflection(Vec2<GLfloat> n, const GLfloat t, const GLfloat aDuration);
 };
 
 
@@ -60,7 +65,7 @@ struct Game
     std::vector<Brick> generateBricks();
     void update(const Timer & aTimer, const MouseInput & aMouse);
 
-    Player mP1{ Rectangle<GLfloat>{{50.f, 50.f}, {50.f, 10.f}},
+    Player mP1{ Rectangle<GLfloat>{{275.f, 50.f}, {50.f, 10.f}},
                 rgb(0, 255, 120)};
     std::vector<Brick> mBricks = generateBricks();
     Ball mBall{ Rectangle<GLfloat>{{300.f, 300.f}, {10.f, 10.f}},
@@ -80,7 +85,7 @@ struct Scene {
 
     void render() const
     {
-        mDrawer.render(static_cast<GLsizei>(2+mGame.mBricks.size()));
+        mDrawer.render();
     }
 
     Game mGame;
